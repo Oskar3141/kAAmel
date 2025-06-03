@@ -77,6 +77,13 @@
         "done": false,
         "rootName": "minecraft:dark_forest",
         "localisationID": "minecraft:dark_forest"
+      },      
+      "minecraft:pale_garden": {
+        "name": "Pale Garden",
+        "icon": "biomes/pale_garden.png",
+        "done": false,
+        "rootName": "minecraft:pale_garden",
+        "localisationID": "minecraft:pale_garden"
       },
       "minecraft:birch_forest": {
         "name": "Birch Forest",
@@ -764,6 +771,13 @@
         "done": false,
         "rootName": "minecraft:slime",
         "localisationID": "minecraft:slime"
+      },
+      "minecraft:creaking": {
+        "name": "Creaking",
+        "icon": "monsters/creaking.png",
+        "done": false,
+        "rootName": "minecraft:creaking",
+        "localisationID": "minecraft:creaking"
       },
       "minecraft:enderman": {
         "name": "Enderman",
@@ -1555,13 +1569,13 @@
     "done": false,
     "criteriaNumber": 0,
     "criteria": {}
-  },
-  "minecraft:nether/use_lodestone": {
-    "name": "Country Lode, Take Me Home",
-    "displayName": "Lodestone",
-    "icon": "items/lodestone.png",
-    "rootName": "minecraft:nether/use_lodestone",
-    "localisationID": "minecraft:nether/use_lodestone",
+  },  
+  "minecraft:nether/uneasy_alliance": {
+    "name": "Stay Hydrated!",
+    "displayName": "Hydration",
+    "icon": "items/dried_ghast.png",
+    "rootName": "minecraft:husbandry/place_dried_ghast_in_water",
+    "localisationID": "minecraft:husbandry/place_dried_ghast_in_water",
     "done": false,
     "criteriaNumber": 0,
     "criteria": {}
@@ -1676,6 +1690,16 @@
     "criteriaNumber": 0,
     "criteria": {}
   },
+  "minecraft:adventure/use_lodestone": {
+    "name": "Country Lode, Take Me Home",
+    "displayName": "Lodestone",
+    "icon": "items/lodestone.png",
+    "rootName": "minecraft:adventure/use_lodestone",
+    "localisationID": "minecraft:adventure/use_lodestone",
+    "done": false,
+    "criteriaNumber": 0,
+    "criteria": {}
+  },
   "minecraft:adventure/craft_decorated_pot_using_only_sherds": {
     "name": "Careful Restoration",
     "displayName": "Restoration",
@@ -1752,6 +1776,16 @@
     "icon": "items/shears.png",
     "rootName": "minecraft:husbandry/remove_wolf_armor",
     "localisationID": "minecraft:husbandry/remove_wolf_armor",
+    "done": false,
+    "criteriaNumber": 0,
+    "criteria": {}
+  },
+  "minecraft:adventure/heart_transplanter": {
+    "name": "Heart Transplanter",
+    "displayName": "New heart",
+    "icon": "items/creaking_heart.png",
+    "rootName": "minecraft:adventure/heart_transplanter",
+    "localisationID": "minecraft:adventure/heart_transplanter",
     "done": false,
     "criteriaNumber": 0,
     "criteria": {}

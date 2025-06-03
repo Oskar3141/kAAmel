@@ -77,6 +77,13 @@
         "done": false,
         "rootName": "minecraft:dark_forest",
         "localisationID": "minecraft:dark_forest"
+      },      
+      "minecraft:pale_garden": {
+        "name": "Pale Garden",
+        "icon": "biomes/pale_garden.png",
+        "done": false,
+        "rootName": "minecraft:pale_garden",
+        "localisationID": "minecraft:pale_garden"
       },
       "minecraft:birch_forest": {
         "name": "Birch Forest",
@@ -764,6 +771,13 @@
         "done": false,
         "rootName": "minecraft:slime",
         "localisationID": "minecraft:slime"
+      },
+      "minecraft:creaking": {
+        "name": "Creaking",
+        "icon": "monsters/creaking.png",
+        "done": false,
+        "rootName": "minecraft:creaking",
+        "localisationID": "minecraft:creaking"
       },
       "minecraft:enderman": {
         "name": "Enderman",
