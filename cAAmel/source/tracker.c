@@ -25,60 +25,98 @@ Tracker* tracker_create(Tracker* tracker) {
 	}
 
 	switch (tracker->settings->version) {
-	case VERSION_1_16:
-		advancements = 43;
-		criteria = 149;
-		multi_part_advancements = 6;
-		m_window_width = 1210;
-		m_window_height = 768;
-		o_window_width = 1600;
-		o_window_height = 400;
+		case VERSION_1_16:
+			advancements = 42;
+			criteria = 149;
+			multi_part_advancements = 6;
+			m_window_width = 1216;
+			m_window_height = 656;
+			o_window_width = 1600;
+			o_window_height = 400;
 
-		tracker->template_path = malloc((strlen("resources/templates/1.16.1/advancements_optimised.json") + 1) * sizeof(char));
-		if (tracker->template_path == NULL) {
-			printf("[MEMORY ERROR] Couldn't allocate enough space for application's template path.\n");
-		}
+			tracker->template_path = malloc((strlen("resources/templates/1.16.1/advancements_optimised.json") + 1) * sizeof(char));
+			if (tracker->template_path == NULL) {
+				printf("[MEMORY ERROR] Couldn't allocate enough space for application's template path.\n");
+			}
 
-		strcpy(tracker->template_path, "resources/templates/1.16.1/advancements_optimised.json");
-		break;
+			strcpy(tracker->template_path, "resources/templates/1.16.1/advancements_optimised.json");
+			break;
 
-	case VERSION_1_20_6:
-		advancements = 69;
-		criteria = 185;
-		multi_part_advancements = 8;
-		m_window_width = 1630;
-		m_window_height = 768;
-		o_window_width = 1600;
-		o_window_height = 400;
+		case VERSION_1_20_6:
+			advancements = 68;
+			criteria = 185;
+			multi_part_advancements = 8;
+			m_window_width = 1630;
+			m_window_height = 768;
+			o_window_width = 1600;
+			o_window_height = 400;
 
-		tracker->template_path = malloc((strlen("resources/templates/1.20.6/advancements_optimised.json") + 1) * sizeof(char));
-		if (tracker->template_path == NULL) {
-			printf("[MEMORY ERROR] Couldn't allocate enough space for application's template path.\n");
-		}
+			tracker->template_path = malloc((strlen("resources/templates/1.20.6/advancements_optimised.json") + 1) * sizeof(char));
+			if (tracker->template_path == NULL) {
+				printf("[MEMORY ERROR] Couldn't allocate enough space for application's template path.\n");
+			}
 
-		strcpy(tracker->template_path, "resources/templates/1.20.6/advancements_optimised.json");
-		break;
+			strcpy(tracker->template_path, "resources/templates/1.20.6/advancements_optimised.json");
+			break;
 
-	case VERSION_1_21:
-		advancements = 75;
-		criteria = 187;
-		multi_part_advancements = 8;
-		m_window_width = 1630;
-		m_window_height = 768;
-		o_window_width = 1600;
-		o_window_height = 400;
+		case VERSION_1_21:
+			advancements = 74;
+			criteria = 187;
+			multi_part_advancements = 8;
+			m_window_width = 1630;
+			m_window_height = 768;
+			o_window_width = 1600;
+			o_window_height = 400;
 
-		tracker->template_path = malloc((strlen("resources/templates/1.21/advancements_optimised.json") + 1) * sizeof(char));
-		if (tracker->template_path == NULL) {
-			printf("[MEMORY ERROR] Couldn't allocate enough space for application's template path.\n");
-		}
+			tracker->template_path = malloc((strlen("resources/templates/1.21/advancements_optimised.json") + 1) * sizeof(char));
+			if (tracker->template_path == NULL) {
+				printf("[MEMORY ERROR] Couldn't allocate enough space for application's template path.\n");
+			}
 
-		strcpy(tracker->template_path, "resources/templates/1.21/advancements_optimised.json");
-		break;
+			strcpy(tracker->template_path, "resources/templates/1.21/advancements_optimised.json");
+			break;
 
-	default:
-		printf("[ERROR] Invalid Version.\n");
-		exit(1);
+		case VERSION_1_21_4:
+			advancements = 74;
+			criteria = 189;
+			multi_part_advancements = 8;
+			m_window_width = 1600;
+			m_window_height = 704;
+			o_window_width = 1600;
+			o_window_height = 400;
+
+			tracker->template_path = malloc((strlen("resources/templates/1.21.4/advancements_optimised.json") + 1) * sizeof(char));
+			if (tracker->template_path == NULL) {
+				printf("[MEMORY ERROR] Couldn't allocate enough space for application's template path.\n");
+			}
+
+			strcpy(tracker->template_path, "resources/templates/1.21.4/advancements_optimised.json");
+			break;
+
+		case VERSION_1_21_6:
+			advancements = 76;
+			criteria = 189;
+			multi_part_advancements = 8;
+			m_window_width = 1600;
+			m_window_height = 704;
+			o_window_width = 1600;
+			o_window_height = 400;
+
+			tracker->template_path = malloc((strlen("resources/templates/1.21.6/advancements_optimised.json") + 1) * sizeof(char));
+			if (tracker->template_path == NULL) {
+				printf("[MEMORY ERROR] Couldn't allocate enough space for application's template path.\n");
+			}
+
+			strcpy(tracker->template_path, "resources/templates/1.21.6/advancements_optimised.json");
+			break;
+
+		default:
+			printf("[ERROR] Invalid Version.\n");
+			exit(1);
+	}
+
+	if (tracker->settings->language > 2 || tracker->settings->language < 0) {
+		tracker->settings->language = 0;
 	}
 
 	tracker->advancements = advancements;
@@ -97,17 +135,19 @@ Tracker* tracker_create(Tracker* tracker) {
 
 	tracker->main_layout->adv_size = 48;
 	tracker->main_layout->padding = 8;
-	tracker->main_layout->spacing_x = 14;
-	tracker->main_layout->spacing_y = 20;
-	tracker->main_layout->text_margin = 4;
+	tracker->main_layout->spacing_x = 16;
+	int max_adv_in_row = (tracker->m_window_width - 2 * tracker->main_layout->padding + tracker->main_layout->spacing_x) / (tracker->main_layout->adv_size + tracker->main_layout->spacing_x);
+	int rows = ceil((float)(advancements - multi_part_advancements) / max_adv_in_row);
+	tracker->main_layout->spacing_y = 24;
+	tracker->main_layout->text_margin = 0;
 	tracker->main_layout->box_width = 2;
-	tracker->main_layout->crt_start_y = 220;
+	tracker->main_layout->crt_start_y = tracker->main_layout->padding + rows * (tracker->main_layout->adv_size + tracker->main_layout->spacing_y);
 	tracker->main_layout->crt_size = 16;
 	tracker->main_layout->crt_spacing_y = 8;
 	tracker->main_layout->crt_spacing_x = 20;
 	tracker->main_layout->crt_group_spacing_x = 40;
 	tracker->main_layout->crt_text_margin = 4;
-	tracker->main_layout->crt_text_fix = 3;
+	tracker->main_layout->crt_text_fix = 1; // Minecraft -> 3
 
 	tracker->overlay_layout = malloc(sizeof * tracker->overlay_layout);
 	if (tracker->overlay_layout == NULL) {
@@ -145,7 +185,7 @@ Tracker* tracker_create(Tracker* tracker) {
 }
 
 void tracker_create_default_settings(Settings* settings) {
-	char b[] = "C:/Users/oski3/OneDrive/Desktop/MultiMC/instances/1.21/.minecraft/saves";
+	char b[] = "";
 	settings->saves_path = malloc((strlen(b) + 1) * sizeof(char));
 	if (settings->saves_path == NULL) {
 		printf("[MEMORY ERROR] Couldn't allocate enough memory for the saves path.\n");
@@ -154,6 +194,7 @@ void tracker_create_default_settings(Settings* settings) {
 
 	strcpy(settings->saves_path, b);
 	settings->version = VERSION_1_21;
+	settings->language = LANG_ENGLISH;
 }
 
 int tracker_load_settings(Settings* settings) {
@@ -165,6 +206,9 @@ int tracker_load_settings(Settings* settings) {
 	
 	cJSON* saves_path = cJSON_GetObjectItemCaseSensitive(cfg, "savesPath");
 	if (!saves_path || !saves_path->valuestring) return 0;
+
+	cJSON* language = cJSON_GetObjectItemCaseSensitive(cfg, "language");
+	if (!language) return 0;
 	
 	settings->saves_path = malloc((strlen(saves_path->valuestring) + 1) * sizeof(char));
 	if (settings->saves_path == NULL) {
@@ -174,6 +218,7 @@ int tracker_load_settings(Settings* settings) {
 
 	settings->version = version->valueint;
 	strcpy(settings->saves_path, saves_path->valuestring);
+	settings->language = language->valueint;
 
 	cJSON_Delete(cfg);
 	return 1;
@@ -181,23 +226,31 @@ int tracker_load_settings(Settings* settings) {
 
 void tracker_render_main(SDL_Renderer* renderer, FC_Font* font, SDL_Texture* bg_texture, ADV_advancement** advancements, int advancements_n, int window_width, int window_height, MainLayout* l) {
 	SDL_Rect rect = { 0, 0, l->adv_size, l->adv_size };
-	SDL_Rect blend_rect = { 0, 0, l->adv_size + 8, l->adv_size + l->text_margin + l->spacing_y };
+	SDL_Rect blend_rect = { 0, 0, l->adv_size + l->spacing_x, l->adv_size + l->text_margin + l->spacing_y };
 	SDL_Rect criterion_rect = { 0, 0, l->crt_size, l->crt_size };
 	SDL_Rect criterion_blend_rect = { 0, 0, 0, l->crt_size };
 
-	check_sdl_code(SDL_SetRenderDrawColor(renderer, 50, 41, 71, 255));
+	// check_sdl_code(SDL_SetRenderDrawColor(renderer, 50, 41, 71, 255));
+	check_sdl_code(SDL_SetRenderDrawColor(renderer, 50, 41, 64, 255));
 	check_sdl_code(SDL_RenderClear(renderer));
 
 	// RENDER LAYOUT. //
 	int offset = 0;
 	int crt_offset = 0;
+	int stack = 0;
+	int with_criteria = 0;
+
+	int max_width;
+	int last_y;
 	for (int i = 0; i < advancements_n; ++i) {
 		int done = advancements[i]->done;
 		int criteria = advancements[i]->criteria_n;
 
 		if (criteria > 0) {
-			int max_width = 0;
-			int last_y = 0;
+			++with_criteria;
+			max_width = 0;
+
+			last_y = 0;
 
 			for (int j = 0; j < criteria; ++j) {
 				int criterion_done = advancements[i]->criteria[j]->done;
@@ -207,7 +260,13 @@ void tracker_render_main(SDL_Renderer* renderer, FC_Font* font, SDL_Texture* bg_
 				int name_width = FC_GetWidth(font, criterion_name);
 
 				max_width = maxi(name_width + l->crt_size + l->crt_text_margin, max_width);
-				criterion_rect.y = l->crt_start_y + (l->crt_size + l->crt_spacing_y) * (j % ((window_height - l->crt_start_y - l->padding) / (l->crt_size + l->crt_spacing_y)));
+
+				if (stack == 0) {
+					criterion_rect.y = l->crt_start_y + (l->crt_size + l->crt_spacing_y) * (j % ((window_height - l->crt_start_y - l->padding + l->crt_spacing_y) / (l->crt_size + l->crt_spacing_y)));					
+				} else {
+					int k = j + 11; // Tymczasowe rozwiązanie. hehe.
+					criterion_rect.y = l->crt_start_y + (l->crt_size + l->crt_spacing_y) * (k % ((window_height - l->crt_start_y - l->padding + l->crt_spacing_y) / (l->crt_size + l->crt_spacing_y)));
+				}
 
 				if (criterion_rect.y < last_y) {
 					crt_offset += max_width + l->crt_spacing_x;
@@ -229,8 +288,19 @@ void tracker_render_main(SDL_Renderer* renderer, FC_Font* font, SDL_Texture* bg_
 					check_sdl_code(SDL_RenderFillRect(renderer, &criterion_blend_rect));
 				}
 			}
-			crt_offset += max_width + l->crt_group_spacing_x;
-			offset += 1;
+
+			if (with_criteria == 6) {
+				stack = 1;
+			} else {
+				stack = 0;
+			}
+			
+			if (stack == 0) {
+				crt_offset += max_width + l->crt_group_spacing_x;
+			}
+
+			++offset;
+			
 			continue;
 		}
 
@@ -247,7 +317,7 @@ void tracker_render_main(SDL_Renderer* renderer, FC_Font* font, SDL_Texture* bg_
 		FC_DrawAlign(font, renderer, x, y, FC_ALIGN_CENTER, advancement_name);
 
 		if (done) {
-			blend_rect.x = rect.x - 4;
+			blend_rect.x = rect.x - l->spacing_x / 2;
 			blend_rect.y = rect.y - 2;
 
 			check_sdl_code(SDL_SetRenderDrawColor(renderer, 50, 41, 71, 200));
@@ -435,6 +505,7 @@ void tracker_render_overlay(
 
 void tracker_delete(Tracker* tracker) {
 	if (tracker != NULL) {
+		cJSON_Delete(tracker->translation);
 		free(tracker->main_layout);
 		free(tracker->overlay_layout);
 		free(tracker->template_path);

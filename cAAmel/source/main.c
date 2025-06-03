@@ -1,15 +1,15 @@
 #define DMON_IMPL
 
 #include <stdio.h>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "../include/cJSON.h"
 #include "../include/SDL_FontCache.h"
 #include "../include/dmon.h"
 
-#include "adv.h"
+#include "ADV.h"
 #include "utils.h"
 #include "tracker.h"
 #include "goal.h"
@@ -19,16 +19,20 @@
 char adv_path[MAX_LEN];
 char stats_path[MAX_LEN];
 
-char saves_path[100];
+char saves_path[MAX_LEN];
 
 int update = 1;
 
 static void watch_callback(dmon_watch_id watch_id, dmon_action action, const char* rootdir, const char* filepath, const char* oldfilepath, void* user) {
-	snprintf(adv_path, sizeof(adv_path), "%s/%s%s\n", saves_path, filepath, "/advancements/ac4cd426-a465-48f2-9217-4ed05336f4a2.json"); // Fix the UUid issue, lol.
+	char* path = strtok(filepath, "/"); // Napraw to coś. xd
+
+	snprintf(adv_path, sizeof(adv_path), "%s/%s%s\n", saves_path, path, "/advancements/ac4cd426-a465-48f2-9217-4ed05336f4a2.json"); // Fix the UUid issue, lol.
 	adv_path[strcspn(adv_path, "\n")] = 0;
 
-	snprintf(stats_path, sizeof(adv_path), "%s/%s%s\n", saves_path, filepath, "/stats/ac4cd426-a465-48f2-9217-4ed05336f4a2.json"); // Fix the UUid issue, lol.
+	snprintf(stats_path, sizeof(adv_path), "%s/%s%s\n", saves_path, path, "/stats/ac4cd426-a465-48f2-9217-4ed05336f4a2.json"); // Fix the UUid issue, lol.
 	stats_path[strcspn(stats_path, "\n")] = 0;
+
+	// printf("TEST: %s, %s, %s", rootdir, filepath, oldfilepath);
 
 	update = 1;
 }
@@ -49,20 +53,48 @@ int main() {
 	SDL_Renderer* m_renderer = check_sdl_ptr(SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED));
 	SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
 
-	int goals_n = 6;
+	// Tłumaczenie
+	char localisation_path[64];
+
+	switch (tracker.settings->language) {
+		case 0: {
+			strcpy(localisation_path, "resources/localisation/english.json");
+		} break;
+
+		case 1: {
+			strcpy(localisation_path, "resources/localisation/polski.json");
+		} break;
+
+		case 2: {
+			strcpy(localisation_path, "resources/localisation/deutsch.json");
+		} break;
+
+		default: {
+			strcpy(localisation_path, "resources/localisation/english.json");
+		}	
+	}
+
+	tracker.translation = cJSON_from_file(localisation_path);
+	if (tracker.translation == NULL) {
+		printf("[ERROR]: Couldn't load the translation.");
+		return;
+	} 
+
+	// Cele
+	int goals_n = 3;
 	Goal** goals = goal_init(goals_n);
-	goals[0] = goal_create(o_renderer, GOALTYPE_nautilus_shells);
-	goals[1] = goal_create(o_renderer, GOALTYPE_trident);
-	goals[2] = goal_create(o_renderer, GOALTYPE_wither_skulls);
-	goals[3] = goal_create(o_renderer, GOALTYPE_sniffers);
-	goals[4] = goal_create(o_renderer, GOALTYPE_heavy_core);
-	goals[5] = goal_create(o_renderer, GOALTYPE_silence);
+	goals[0] = goal_create(o_renderer, GOALTYPE_nautilus_shells, tracker.translation);
+	goals[1] = goal_create(o_renderer, GOALTYPE_trident, tracker.translation);
+	goals[2] = goal_create(o_renderer, GOALTYPE_wither_skulls, tracker.translation);
+//	goals[3] = goal_create(o_renderer, GOALTYPE_sniffers, tracker.translation);
+//	goals[4] = goal_create(o_renderer, GOALTYPE_heavy_core, tracker.translation);
+//	goals[5] = goal_create(o_renderer, GOALTYPE_silence, tracker.translation);
 
 	ADV_advancement** advancements = ADV_get_advancements(tracker.advancements, tracker.template_path);
 
 	// Dmon.
 	dmon_init();
-	dmon_watch(saves_path, watch_callback, 0, NULL);
+	dmon_watch(saves_path, watch_callback, DMON_WATCHFLAGS_RECURSIVE, NULL);
 
 	// IMAGES. //
 	SDL_Texture* m_adv_bg = check_sdl_ptr(IMG_LoadTexture(m_renderer, "resources/gui/advancement_background.png"));
@@ -72,18 +104,26 @@ int main() {
 
 	// FONTS. //
 	FC_Font* overlay_font = FC_CreateFont();
-	FC_LoadFont(overlay_font, o_renderer, "resources/fonts/Minecraft.ttf", 16, (SDL_Colour) { 255, 255, 255, 255 }, TTF_STYLE_NORMAL);
+	FC_LoadFont(overlay_font, o_renderer, "resources/fonts/Roboto-Regular.ttf", 18, (SDL_Colour) { 255, 255, 255, 255 }, TTF_STYLE_NORMAL);
 
 	FC_Font* main_font = FC_CreateFont();
-	FC_LoadFont(main_font, m_renderer, "resources/fonts/Minecraft.ttf", 11, (SDL_Colour) { 255, 255, 255, 255 }, TTF_STYLE_NORMAL);
+	FC_LoadFont(main_font, m_renderer, "resources/fonts/Roboto-Regular.ttf", 11, (SDL_Colour) { 255, 255, 255, 255 }, TTF_STYLE_NORMAL);
 
 	{
+		cJSON *val;
+
 		int offset = 0;
 		char path_buffer[256];
 		for (int i = 0; i < tracker.advancements; ++i) {
+			// printf("%s\n", advancements[i])
 			snprintf(path_buffer, sizeof(path_buffer), "resources/sprites/%s", advancements[i]->icon);
 			advancements[i]->texture = check_sdl_ptr(IMG_LoadTexture(m_renderer, path_buffer));
 			advancements[i]->overlay_texture = check_sdl_ptr(IMG_LoadTexture(o_renderer, path_buffer));
+			
+			val = cJSON_GetObjectItemCaseSensitive(tracker.translation, advancements[i]->localisation_id);
+			if (cJSON_IsString(val) && val->valuestring) {
+				strcpy(advancements[i]->display_name, val->valuestring);
+			}
 
 			int n = advancements[i]->criteria_n;
 			if (n > 0) {
@@ -91,6 +131,11 @@ int main() {
 					snprintf(path_buffer, sizeof(path_buffer), "resources/sprites/%s", advancements[i]->criteria[j]->icon);
 					advancements[i]->criteria[j]->texture = check_sdl_ptr(IMG_LoadTexture(m_renderer, path_buffer));
 					advancements[i]->criteria[j]->overlay_texture = check_sdl_ptr(IMG_LoadTexture(o_renderer, path_buffer));
+
+					val = cJSON_GetObjectItemCaseSensitive(tracker.translation, advancements[i]->criteria[j]->localisation_id);
+					if (cJSON_IsString(val) && val->valuestring) {
+						strcpy(advancements[i]->criteria[j]->name, val->valuestring);
+					}
 				}
 				offset += n;
 			}

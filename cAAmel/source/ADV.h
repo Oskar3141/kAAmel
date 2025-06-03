@@ -6,12 +6,13 @@
 #include "../include/cJSON.h"
 #include "goal.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 typedef struct {
 	char* name;
 	char* icon;
 	char* root_name;
+	char* localisation_id;
 	int done;
 	SDL_Texture* texture;
 	SDL_Texture* overlay_texture;
@@ -22,6 +23,7 @@ typedef struct {
 	char* display_name;
 	char* icon;
 	char* root_name;
+	char* localisation_id;
 	int done;
 	int criteria_n;
 	ADV_criterion** criteria;
@@ -29,10 +31,10 @@ typedef struct {
 	SDL_Texture* overlay_texture;
 } ADV_advancement;
 
-ADV_criterion* ADV_new_criterion(char* name, char* icon, char* root_name, int done);
+ADV_criterion* ADV_new_criterion(char* name, char* icon, char* root_name, char* localisation_id, int done);
 void ADV_delete_criterion(ADV_criterion* criterion);
 
-ADV_advancement* ADV_new_advancement(char* name, char* display_name, char* icon, char* root_name, ADV_criterion** criteria, int criteria_n, int done);
+ADV_advancement* ADV_new_advancement(char* name, char* display_name, char* icon, char* root_name, char* localisation_id, ADV_criterion** criteria, int criteria_n, int done);
 void ADV_delete_advancement(ADV_advancement* advancement);
 
 ADV_advancement** ADV_object_from_template(cJSON* template, int n);

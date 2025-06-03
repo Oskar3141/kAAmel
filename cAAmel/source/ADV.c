@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "adv.h"
+#include "ADV.h"
 #include "utils.h"
 
 #ifdef _WIN32
 #define strdup _strdup
 #endif
 
-ADV_criterion* ADV_new_criterion(char* name, char* icon, char* root_name, int done) {
+ADV_criterion* ADV_new_criterion(char* name, char* icon, char* root_name, char* localisation_id, int done) {
 	ADV_criterion* criterion = malloc(sizeof *criterion);
 	if (criterion == NULL) {
 		return NULL;
@@ -36,9 +36,19 @@ ADV_criterion* ADV_new_criterion(char* name, char* icon, char* root_name, int do
 		return NULL;
 	}
 
+	criterion->localisation_id = malloc(sizeof(char) * (1 + strlen(localisation_id)));
+	if (name == NULL) {
+		free(criterion->name);
+		free(criterion->icon);
+		free(criterion->root_name);
+		free(criterion);
+		return NULL;
+	}
+
 	strcpy(criterion->name, name);
 	strcpy(criterion->icon, icon);
 	strcpy(criterion->root_name, root_name);
+	strcpy(criterion->localisation_id, localisation_id);
 	criterion->done = done;
 	criterion->texture = NULL;
 	criterion->overlay_texture = NULL;
@@ -51,6 +61,7 @@ void ADV_delete_criterion(ADV_criterion* criterion) {
 		free(criterion->name);
 		free(criterion->icon);
 		free(criterion->root_name);
+		free(criterion->localisation_id);
 
 		if (criterion->texture != NULL) {
 			SDL_DestroyTexture(criterion->texture);
@@ -64,7 +75,7 @@ void ADV_delete_criterion(ADV_criterion* criterion) {
 	}
 }
 
-ADV_advancement* ADV_new_advancement(char* name, char* display_name, char* icon, char* root_name, ADV_criterion** criteria, int criteria_n, int done) {
+ADV_advancement* ADV_new_advancement(char* name, char* display_name, char* icon, char* root_name, char* localisation_id, ADV_criterion** criteria, int criteria_n, int done) {
 	ADV_advancement* advancement = malloc(sizeof *advancement);
 	if (advancement == NULL) {
 		return NULL;
@@ -92,10 +103,20 @@ ADV_advancement* ADV_new_advancement(char* name, char* display_name, char* icon,
 	}
 
 	advancement->root_name = malloc(sizeof(char) * (1 + strlen(root_name)));
-	if (advancement->icon == NULL) {
+	if (advancement->root_name == NULL) {
 		free(advancement->name);
 		free(advancement->display_name);
 		free(advancement->icon);
+		free(advancement);
+		return NULL;
+	}
+
+	advancement->localisation_id = malloc(sizeof(char) * (1 + strlen(localisation_id)));
+	if (advancement->localisation_id == NULL) {
+		free(advancement->name);
+		free(advancement->display_name);
+		free(advancement->icon);
+		free(advancement->root_name);
 		free(advancement);
 		return NULL;
 	}
@@ -107,6 +128,7 @@ ADV_advancement* ADV_new_advancement(char* name, char* display_name, char* icon,
 			free(advancement->display_name);
 			free(advancement->icon);
 			free(advancement->root_name);
+			free(advancement->localisation_id);
 			free(advancement);
 			return NULL;
 		}
@@ -116,6 +138,7 @@ ADV_advancement* ADV_new_advancement(char* name, char* display_name, char* icon,
 	strcpy(advancement->display_name, display_name);
 	strcpy(advancement->icon, icon);
 	strcpy(advancement->root_name, root_name);
+	strcpy(advancement->localisation_id, localisation_id);
 	advancement->criteria_n = criteria_n;
 	advancement->texture = NULL;
 	advancement->overlay_texture = NULL;
@@ -135,6 +158,7 @@ void ADV_delete_advancement(ADV_advancement* advancement) {
 		free(advancement->display_name);
 		free(advancement->icon);
 		free(advancement->root_name);
+		free(advancement->localisation_id);
 		
 		if (advancement->texture != NULL) {
 			SDL_DestroyTexture(advancement->texture);
@@ -166,10 +190,11 @@ ADV_advancement** ADV_object_from_template(cJSON* template, int n) {
 		cJSON* display_name = cJSON_GetObjectItemCaseSensitive(entry, "displayName");
 		cJSON* icon = cJSON_GetObjectItemCaseSensitive(entry, "icon");
 		cJSON* root_name = cJSON_GetObjectItemCaseSensitive(entry, "rootName");
+		cJSON* localisation_id = cJSON_GetObjectItemCaseSensitive(entry, "localisationID");
 		cJSON* criteria = cJSON_GetObjectItemCaseSensitive(entry, "criteria");
 		cJSON* criteria_number = cJSON_GetObjectItemCaseSensitive(entry, "criteriaNumber");
 		
-		if (!name || !display_name || !icon || !root_name || !criteria || !criteria_number || !root_name->valuestring || !name->valuestring || !display_name->valuestring || !icon->valuestring) {
+		if (!name || !display_name || !icon || !localisation_id || !root_name || !criteria || !criteria_number || !root_name->valuestring || !name->valuestring || !display_name->valuestring || !icon->valuestring || !localisation_id->valuestring) {
 			goto error;
 		}
 		
@@ -193,9 +218,10 @@ ADV_advancement** ADV_object_from_template(cJSON* template, int n) {
 				cJSON* criterion_name = cJSON_GetObjectItemCaseSensitive(criteria_entry, "name");
 				cJSON* criterion_icon = cJSON_GetObjectItemCaseSensitive(criteria_entry, "icon");
 				cJSON* criterion_root_name = cJSON_GetObjectItemCaseSensitive(criteria_entry, "rootName");
+				cJSON* criterion_localisation_id = cJSON_GetObjectItemCaseSensitive(criteria_entry, "localisationID");
 
-				if (!criterion_name || !criterion_icon || !criterion_root_name || 
-					!criterion_name->valuestring || !criterion_icon->valuestring || !criterion_root_name->valuestring
+				if (!criterion_name || !criterion_icon || !criterion_root_name || !criterion_localisation_id ||
+					!criterion_name->valuestring || !criterion_icon->valuestring || !criterion_root_name->valuestring || !criterion_localisation_id->valuestring
 				) {
 					goto error;
 				}
@@ -204,6 +230,7 @@ ADV_advancement** ADV_object_from_template(cJSON* template, int n) {
 					strdup(criterion_name->valuestring),
 					strdup(criterion_icon->valuestring),
 					strdup(criterion_root_name->valuestring),
+					strdup(criterion_localisation_id->valuestring),
 					0
 				);
 
@@ -217,6 +244,7 @@ ADV_advancement** ADV_object_from_template(cJSON* template, int n) {
 			strdup(display_name->valuestring),
 			strdup(icon->valuestring),
 			strdup(root_name->valuestring),
+			strdup(localisation_id->valuestring),
 			criteria_a,
 			criteria_n,
 			0

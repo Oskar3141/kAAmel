@@ -81,6 +81,17 @@ void* check_sdl_ptr(void* ptr) {
 	return ptr;
 }
 
+void load_localisation(char *out, const char *name, const cJSON *translation) {
+	cJSON* val;
+	val = cJSON_GetObjectItemCaseSensitive(translation, name);
+	if (!cJSON_IsString(val) || !val->valuestring) {
+		printf("[ERROR]: Couldn't load a localisation.\n");
+		exit(1);
+	}
+
+	strcpy(out, val->valuestring);
+}
+
 int maxi(int a, int b) {
 	if (a > b) return a;
 	return b;

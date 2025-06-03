@@ -3,16 +3,25 @@
 #ifndef TRACKER_H
 #define TRACKER_H
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "ADV.h"
 #include "goal.h"
 #include "../include/SDL_FontCache.h"
+#include "../include/cJSON.h"
+
+typedef enum {
+	LANG_ENGLISH,
+	LANG_GERMAN,
+	LANG_POLISH
+} Language;
 
 typedef	enum {
 	VERSION_1_16,
 	VERSION_1_20_6,
 	VERSION_1_21,
+	VERSION_1_21_4,
+	VERSION_1_21_6
 } Version;
 
 typedef struct {
@@ -57,6 +66,7 @@ typedef struct {
 typedef struct {
 	Version version;
 	char* saves_path;
+	Language language;
 } Settings;
 
 typedef struct {
@@ -72,6 +82,7 @@ typedef struct {
 	Settings* settings;
 	MainLayout* main_layout;
 	OverlayLayout* overlay_layout;
+	cJSON *translation;
 } Tracker;
 
 Tracker* tracker_create(Tracker* tracker);

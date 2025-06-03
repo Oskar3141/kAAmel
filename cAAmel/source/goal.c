@@ -2,7 +2,7 @@
 #include "goal.h"
 #include "utils.h"
 
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -48,13 +48,38 @@ SubGoal* goal_sub_create(const SubGoalType type, const char* name, const char* r
 	return sub_goal;
 }
 
-Goal* goal_create(const SDL_Renderer* renderer, const GoalType type) {
+Goal* goal_create(const SDL_Renderer* renderer, const GoalType type, const cJSON *translation) {
 	Goal* goal = malloc(sizeof * goal);
 	if (goal == NULL) {
 		goto memory_error;
 	}
 
 	goal->done = 0;
+
+	char localisation_buffer[128];
+
+	/*
+	goaltext_shells
+	goaltext_craft_conduit
+	goaltext_place_conduit
+	goaltext_hdwgh
+	goaltext_done_hdwgh
+	goaltext_trident
+	goaltext_awaiting_thunder
+	goaltext_done_thunder
+	goaltext_skulls
+	goaltext_done_skulls
+	goaltext_heavy_core
+	goaltext_mace
+	goaltext_overkill
+	goaltext_done_overkill
+	goaltext_eggs
+	goaltext_place_eggs
+	goaltext_snifflet
+	goaltext_done_sniffer
+	goaltext_silence
+	goaltext_done_silence
+	*/
 
 	switch (type) {
 		case GOALTYPE_nautilus_shells:
@@ -66,11 +91,21 @@ Goal* goal_create(const SDL_Renderer* renderer, const GoalType type) {
 				goto memory_error;
 			}
 
-			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, "Shells", "minecraft:nautilus_shell", DISPLAYTYPE_name_progress_goal, 8);
-			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_item_craft, "Craft\nConduit", "minecraft:conduit", DISPLAYTYPE_name, 1);
-			goal->sub_goals[2] = goal_sub_create(SUBGOALTYPE_item_use, "Place\nConduit", "minecraft:conduit", DISPLAYTYPE_name, 1);
-			goal->sub_goals[3] = goal_sub_create(SUBGOALTYPE_advancement, "Do HDWGH", "minecraft:nether/all_effects", DISPLAYTYPE_name, 1);
-			goal->sub_goals[4] = goal_sub_create(SUBGOALTYPE_final, "Done with\nHDWGH", "", DISPLAYTYPE_name, -1);
+			load_localisation(localisation_buffer, "goaltext:shells", translation);
+			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, localisation_buffer, "minecraft:nautilus_shell", DISPLAYTYPE_name_progress_goal, 8);
+
+			load_localisation(localisation_buffer, "goaltext:craft_conduit", translation);
+			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_item_craft, localisation_buffer, "minecraft:conduit", DISPLAYTYPE_name, 1);
+
+			load_localisation(localisation_buffer, "goaltext:place_conduit", translation);
+			goal->sub_goals[2] = goal_sub_create(SUBGOALTYPE_item_use, localisation_buffer, "minecraft:conduit", DISPLAYTYPE_name, 1);
+
+			load_localisation(localisation_buffer, "goaltext:hdwgh", translation);
+			goal->sub_goals[3] = goal_sub_create(SUBGOALTYPE_advancement, localisation_buffer, "minecraft:nether/all_effects", DISPLAYTYPE_name, 1);
+
+			load_localisation(localisation_buffer, "goaltext:done_hdwgh", translation);
+			goal->sub_goals[4] = goal_sub_create(SUBGOALTYPE_final, localisation_buffer, "", DISPLAYTYPE_name, -1);
+
 			break;
 
 		case GOALTYPE_trident:
@@ -82,10 +117,18 @@ Goal* goal_create(const SDL_Renderer* renderer, const GoalType type) {
 				goto memory_error;
 			}
 
-			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, "Obtain\nTrident", "minecraft:trident", DISPLAYTYPE_name, 1);
-			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_advancement, "Awaiting\nThunder", "minecraft:adventure/very_very_frightening", DISPLAYTYPE_name, 1);
-			goal->sub_goals[2] = goal_sub_create(SUBGOALTYPE_advancement, "Awaiting\nThunder", "minecraft:adventure/lightning_rod_with_villager_no_fire", DISPLAYTYPE_name, 1);
-			goal->sub_goals[3] = goal_sub_create(SUBGOALTYPE_final, "Done With\nThunder", "", DISPLAYTYPE_name, -1);
+			load_localisation(localisation_buffer, "goaltext:trident", translation);
+			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, localisation_buffer, "minecraft:trident", DISPLAYTYPE_name, 1);
+
+			load_localisation(localisation_buffer, "goaltext:awaiting_thunder", translation);
+			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_advancement, localisation_buffer, "minecraft:adventure/very_very_frightening", DISPLAYTYPE_name, 1);
+			
+			load_localisation(localisation_buffer, "goaltext:awaiting_thunder", translation);
+			goal->sub_goals[2] = goal_sub_create(SUBGOALTYPE_advancement, localisation_buffer, "minecraft:adventure/lightning_rod_with_villager_no_fire", DISPLAYTYPE_name, 1);
+			
+			load_localisation(localisation_buffer, "goaltext:done_thunder", translation);
+			goal->sub_goals[3] = goal_sub_create(SUBGOALTYPE_final, localisation_buffer, "", DISPLAYTYPE_name, -1);
+			
 			break;
 
 		case GOALTYPE_wither_skulls:
@@ -97,8 +140,12 @@ Goal* goal_create(const SDL_Renderer* renderer, const GoalType type) {
 				goto memory_error;
 			}
 
-			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, "Skulls", "minecraft:wither_skeleton_skull", DISPLAYTYPE_name_progress_goal, 3);
-			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_kill, "3 / 3\nKilled: ", "minecraft:wither_skeleton", DISPLAYTYPE_name_progress, -1);
+			load_localisation(localisation_buffer, "goaltext:skulls", translation);
+			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, localisation_buffer, "minecraft:wither_skeleton_skull", DISPLAYTYPE_name_progress_goal, 3);
+			
+			load_localisation(localisation_buffer, "goaltext:done_skulls", translation);
+			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_kill, localisation_buffer, "minecraft:wither_skeleton", DISPLAYTYPE_name_progress, -1);
+			
 			break;
 
 		case GOALTYPE_heavy_core:
@@ -110,10 +157,18 @@ Goal* goal_create(const SDL_Renderer* renderer, const GoalType type) {
 				goto memory_error;
 			}
 
-			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, "Obtain\nHeavy Core", "minecraft:heavy_core", DISPLAYTYPE_name, 1);
-			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_item_craft, "Craft a\nMace", "minecraft:mace", DISPLAYTYPE_name, 1);
-			goal->sub_goals[2] = goal_sub_create(SUBGOALTYPE_advancement, "Get Overkill", "minecraft:adventure/overoverkill", DISPLAYTYPE_name, 1);
-			goal->sub_goals[3] = goal_sub_create(SUBGOALTYPE_item_use, "Over-Overkill\nCompleted\nOpened: ", "minecraft:ominous_trial_key", DISPLAYTYPE_name_progress, -1);
+			load_localisation(localisation_buffer, "goaltext:heavy_core", translation);
+			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, localisation_buffer, "minecraft:heavy_core", DISPLAYTYPE_name, 1);
+			
+			load_localisation(localisation_buffer, "goaltext:mace", translation);
+			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_item_craft, localisation_buffer, "minecraft:mace", DISPLAYTYPE_name, 1);
+			
+			load_localisation(localisation_buffer, "goaltext:overkill", translation);
+			goal->sub_goals[2] = goal_sub_create(SUBGOALTYPE_advancement, localisation_buffer, "minecraft:adventure/overoverkill", DISPLAYTYPE_name, 1);
+			
+			load_localisation(localisation_buffer, "goaltext:done_overkill", translation);
+			goal->sub_goals[3] = goal_sub_create(SUBGOALTYPE_item_use, localisation_buffer, "minecraft:ominous_trial_key", DISPLAYTYPE_name_progress, -1);
+			
 			break;
 
 		case GOALTYPE_sniffers:
@@ -125,10 +180,18 @@ Goal* goal_create(const SDL_Renderer* renderer, const GoalType type) {
 				goto memory_error;
 			}
 
-			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, "Eggs", "minecraft:sniffer_egg", DISPLAYTYPE_name_progress_goal, 2);
-			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_item_use, "Place Eggs", "minecraft:sniffer_egg", DISPLAYTYPE_name, 2);
-			goal->sub_goals[2] = goal_sub_create(SUBGOALTYPE_advancement, "Feed Snifflet", "minecraft:husbandry/feed_snifflet", DISPLAYTYPE_name, 1);
-			goal->sub_goals[3] = goal_sub_create(SUBGOALTYPE_final, "Done With\nSniffers", "", DISPLAYTYPE_name, -1);
+			load_localisation(localisation_buffer, "goaltext:eggs", translation);
+			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_item_pick_up, localisation_buffer, "minecraft:sniffer_egg", DISPLAYTYPE_name_progress_goal, 2);
+			
+			load_localisation(localisation_buffer, "goaltext:place_eggs", translation);
+			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_item_use, localisation_buffer, "minecraft:sniffer_egg", DISPLAYTYPE_name, 2);
+			
+			load_localisation(localisation_buffer, "goaltext:snifflet", translation);
+			goal->sub_goals[2] = goal_sub_create(SUBGOALTYPE_advancement, localisation_buffer, "minecraft:husbandry/feed_snifflet", DISPLAYTYPE_name, 1);
+			
+			load_localisation(localisation_buffer, "goaltext:done_sniffer", translation);
+			goal->sub_goals[3] = goal_sub_create(SUBGOALTYPE_final, localisation_buffer, "", DISPLAYTYPE_name, -1);
+			
 			break;
 
 		case GOALTYPE_silence:
@@ -140,8 +203,12 @@ Goal* goal_create(const SDL_Renderer* renderer, const GoalType type) {
 				goto memory_error;
 			}
 
-			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_advancement, "Obtain\nSilence", "minecraft:recipes/misc/silence_armor_trim_smithing_template", DISPLAYTYPE_name, 1);
-			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_final, "Silence\nObtained", "", DISPLAYTYPE_name, -1);
+			load_localisation(localisation_buffer, "goaltext:silence", translation);
+			goal->sub_goals[0] = goal_sub_create(SUBGOALTYPE_advancement, localisation_buffer, "minecraft:recipes/misc/silence_armor_trim_smithing_template", DISPLAYTYPE_name, 1);
+			
+			load_localisation(localisation_buffer, "goaltext:done_silence", translation);
+			goal->sub_goals[1] = goal_sub_create(SUBGOALTYPE_final, localisation_buffer, "", DISPLAYTYPE_name, -1);
+			
 			break;
 	
 		default:

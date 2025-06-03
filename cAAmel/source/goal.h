@@ -3,7 +3,8 @@
 #ifndef GOAL_H
 #define GOAL_H
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
+#include "../include/cJSON.h"
 
 typedef enum {
 	DISPLAYTYPE_name,
@@ -50,7 +51,7 @@ typedef struct {
 
 Goal** goal_init(const int n);
 SubGoal* goal_sub_create(const SubGoalType type, const char* name, const char* root_name, const DisplayType display_type, const int goal);
-Goal* goal_create(const SDL_Renderer* renderer, const GoalType type);
+Goal* goal_create(const SDL_Renderer* renderer, const GoalType type, const cJSON *translation);
 void goal_update(Goal** goals, const int goals_n, const char* file_path);
 void goal_delete(Goal** goals, const int goals_n);
 
