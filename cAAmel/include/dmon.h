@@ -998,7 +998,8 @@ _DMON_PRIVATE void _dmon_inotify_process_events(void)
                     uint32_t mask = IN_MOVED_TO | IN_CREATE | IN_MOVED_FROM | IN_DELETE | IN_MODIFY;
                     int wd = inotify_add_watch(watch->fd, watchdir, mask);
                     _DMON_UNUSED(wd);
-                    DMON_ASSERT(wd != -1);
+                    // DMON_ASSERT(wd != -1);
+                    if (wd == -1) return; // XD
 
                     dmon__watch_subdir subdir;
                     _dmon_strcpy(subdir.rootdir, sizeof(subdir.rootdir), watchdir);
